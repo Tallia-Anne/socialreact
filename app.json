@@ -30,6 +30,17 @@
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photoPermission": {
+            "accesses": "photos",
+            "purpose": "The app accesses your photos to let you share them with your friends."
+          }
+        }
+      ]
+    ]
   }
 }

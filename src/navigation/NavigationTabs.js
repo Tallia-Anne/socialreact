@@ -1,12 +1,37 @@
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { WelcomeScreen } from '../screens';
-import { Foundation as FoundationIcons } from 'react-native-vector-icons';
+import SearchScreen from '../screens/SearchScreen';
+
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import jwtDecode from 'jwt-decode';
+import { AuthContext } from '../context/AuthContext';
+import { AddPost } from '../screens';
 const Tabs = createBottomTabNavigator();
 
 const NavigationTabs = () => {
+    const { userInfo } = useContext(AuthContext);
+    // console.log(userInfo);
+    // console.log(userInfo.token);
+
+    let decodedToken;
+    try {
+        const trimmedToken = userInfo.token;
+        decodedToken = jwtDecode(trimmedToken);
+
+
+        // console.log(decodedToken.id);
+    } catch (error) {
+        console.log('Error decoding token:', error);
+    }
+
+    // Utilisez les informations extraites du jeton pour obtenir le nom de l'utilisateur
+    const userName = decodedToken ? decodedToken.name : '';
+    const userId = userInfo && userInfo.token ? jwtDecode(userInfo.token).id : null;
+    // console.log('userId',userId);
+    // console.log(decodedToken)
     return (
         <Tabs.Navigator>
             <Tabs.Screen
@@ -15,51 +40,73 @@ const NavigationTabs = () => {
                 component={HomeScreen}
                 options={
                     {
-
+                        tabBarShowLabel: false,
                         tabBarlabel: "Accueil",
                         tabBarActibeTinColor: "#333",
                         tabBarInactiveTintColor: "#888",
                         title: "Accueil",
+                        headerShown: false,
                         tabBarIcon: ({ color, size }) => (
-                            <FoundationIcons name="home" color={color} size={size} />)
+                            <AntDesign name="home" color={color} size={size} />)
                     }
                 }
             />
            
-           
-
             <Tabs.Screen
-                name="ProfileScreen"
+                name="AddPost"
 
-                component={ProfileScreen}
+                component={AddPost}
                 options={
                     {
 
+                        tabBarShowLabel: false,
+                        tabBarlabel: "AddPost",
+                        tabBarActibeTinColor: "#333",
+                        tabBarInactiveTintColor: "#888",
+                        title: "AddPost",
+                        headerShown: false,
+                        tabBarIcon: ({ color, size }) => (
+                            <AntDesign name="plus" color={color} size={size} />)
+                    }
+                }
+            />
+
+            <Tabs.Screen
+                name="ProfileScreen"
+                initialParams={userId ? { userId: userId } : null}
+                component={ProfileScreen}
+                options={
+                    {
+                        tabBarShowLabel: false,
                         tabBarlabel: "Profile",
                         tabBarActibeTinColor: "#333",
                         tabBarInactiveTintColor: "#888",
                         title: "Profile",
+                        headerShown: false,
                         tabBarIcon: ({ color, size }) => (
-                            <FoundationIcons name="widget" color={color} size={size} />)
+                            <AntDesign name="user" color={color} size={size} />)
                     }
                 }
             />
+            
             <Tabs.Screen
-                name="WelcomeScreen"
+                name="SearchScreen"
 
-                component={WelcomeScreen}
+                component={SearchScreen}
                 options={
                     {
-
-                        tabBarlabel: "WelcomeScreen",
+                        tabBarShowLabel: false,
+                        headerShown: false,
+                        tabBarlabel: "Search",
                         tabBarActibeTinColor: "#333",
                         tabBarInactiveTintColor: "#888",
-                        title: "Welcome",
+                        title: "Search",
                         tabBarIcon: ({ color, size }) => (
-                            <FoundationIcons name="widget" color={color} size={size} />)
+                            <AntDesign name="search1" color={color} size={size} />)
                     }
                 }
             />
+           
 
         </Tabs.Navigator>
     );

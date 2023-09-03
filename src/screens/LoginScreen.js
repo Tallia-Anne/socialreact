@@ -1,103 +1,143 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Button, Text, Pressable } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Background, Btn } from '../components';
-import {  violet } from '../shared/theme/colors';
-import { KeyboardAvoidingView } from 'react-native';
-const LoginScreen = ({navigation}) => {
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, TextInput, Button, Text, Dimensions, ScrollView, ImageBackground, Pressable } from 'react-native';
+
+
+import { violet } from '../shared/theme/colors';
+import { AuthContext } from '../context/AuthContext';
+
+
+
+const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-   
-    const handleLogin = async () => {
-        try {
-            const response = await fetch('http://192.168.1.30:3000/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
-            });
+    const { isLoading, login } = useContext(AuthContext);
 
-            if (response.ok) {
-                const data = await response.json();
-                const { token } = data;
-                await AsyncStorage.setItem('token', token);
-                navigation.navigate('HomeScreen');
-               
-            } else {
-                console.log('Erreur lors de la connexion');
-            }
-        } catch (error) {
-            console.log('Erreur lors de la requête de connexion', error);
-        }
-    };
+
     return (
-        <Background >
-            <View style={{ alignItems: "center", width: 360, height: 500 }}>
-                <View style={{  height: 50 }}>
-                </View>
-                <KeyboardAvoidingView style={styles.container} behavior='height'>
-                <View style={{ backgroundColor: 'white', height: 700, width: 360, borderTopLeftRadius: 100, borderTopRightRadius: 100, paddingTop: 100, alignItems:'center' }}>
-                    <Text style={{ fontSize: 40, color: 'pink', fontWeight: 'bold' }}>Bienvenue</Text>
-                    <Text style={{ fontSize: 19, color: 'grey', fontWeight: 'bold', marginBottom: 20 }}>Login to your account</Text>
-                    <Text style={styles.title}>Connexion</Text>
-                    <Text aria-label="Label for Username" nativeID="labelUsername">Email</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Adresse e-mail"
-                        value={email}
-                        onChangeText={text => setEmail(text)}
-                    />
-                    <Text aria-label="Label for Email" nativeID="label Email">Mot de passe</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Mot de passe"
-                        secureTextEntry
-                        value={password}
-                        onChangeText={text => setPassword(text)}
-                    />
-                    <Pressable onPress={() => navigation.navigate('ForgotScreen')}>
-                        <Text style={styles.forgotText}>Mot de passe oublié</Text>
-                    </Pressable>
-                    <Btn btnLabel="Se connecter" Press={handleLogin}  />
-                    <Pressable onPress={() => navigation.navigate('RegisterScreen')}>
-                        <Text style={styles.registerText}>Pas de compte ? S'inscrire</Text>
-                    </Pressable>
-                    </View>
-                </KeyboardAvoidingView>
-                
-            </View>
+        // container
+        <ScrollView style={{ flex: 1, backgroundColor: '#ffffffff' }}
+            showsHorizontalScrollIndicator={false}
             
-        </Background>
-);
+        > 
+            {/* image */}
+            <ImageBackground
+                source={require('../assets/font.jpg')}
+                style={{height:Dimensions.get('window').height /2.5,}}
+            >
+               
+                {/* <View style={styles.brandView}>
+                    <Text style={styles.brandViewText}>Connexion</Text>
+                </View> */}
+            </ImageBackground>
+            {/* image */}
+            {/* FormulaireContainer */}
+            <View style={styles.bottomView}>
+                <View style={{ padding: 40 }}>
+                    
+                    <Text style={{ color: '#4632A1', fontSize: 26 }}>Connexion du
+                        compte</Text>
+                  
+                    
+                    {/* Formulaire */}
+                    <View style={styles.formFormulaire}>
+                        <View style={styles.inputForm}>
+                        <Text aria-label="Label for Email" nativeID="label Email" style={styles.label}>Email :</Text>
+                        <TextInput
+                            style={styles.input}
+                                placeholder="Adresse e-mail"
+                            keyboardType="email-address"
+                            value={email}
+                            onChangeText={text => setEmail(text)}
+                            />
+                        </View>
+                        <View style={styles.inputForm}>
+                        <Text aria-label="Label for Email" nativeID="label Email" style={styles.label}>Mot de passe :</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Mot de passe"
+                            secureTextEntry
+                            value={password}
+                            onChangeText={text => setPassword(text)}
+                            />
+                        </View>
+                        <Pressable onPress={() => navigation.navigate('ForgotScreen')}>
+                            <Text style={styles.forgotText}>Mot de passe oublié</Text>
+                        </Pressable>
+                        <Button style={{borderRadius: 50 , marginBottom: 12 }} title="connexion" color="#841584" onPress={() => login(email, password)}  />
+                        <Pressable onPress={() => navigation.navigate('RegisterScreen')}>
+                            <View style={styles.compte} >
+                                <Text style={styles.registerText}>Pas de compte ? </Text>
+                                <Text style={styles.registerinscrire}>S'inscrire</Text>
+                            </View>
+                        </Pressable>
+                    </View>
+                    {/* Formulaire */}
+                    
+                </View>
+            </View>
+            {/* FormulaireContainer */}
+            
+        </ScrollView>
+        // container
+       
+    );
 
 }
 
 const styles = StyleSheet.create({
-    container: {
-        paddingHorizontal: 20,
+    brandView: {
+        justifyContent: 'center',
+        alignItems:'center',
+        flex: 1,
     },
-    title: {
-        fontSize: 24,
+    brandViewText: {
+        color: 'white',
+        fontSize: 30,
         fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    input: {
-        width: '80%',
-        height: 40,
+        textTransform: 'uppercase',
+    }, 
+    bottomView: {
+        flex: 1.5,
+        backgroundColor: '#ffffff',
+        bottom: 50,
+        borderTopStartRadius: 60,
+        borderTopEndRadius: 60,
         
+    },
+    
+  
+    formFormulaire: {
+        marginTop: 50,
+        width: '100%',       
+    },
+    label: {
+        marginBottom: 12,
+        fontWeight: 'bold',
+    },
+   
+    input: {
+        width: '100%',
+        height: 40,
         borderWidth: 1,
         borderRadius: 50,
-        marginBottom: 10,
+        marginBottom: 25,
         backgroundColor: 'rgba(151, 157, 215, 0.39)',
         padding: 10,
+        borderWidth: 0, borderColor: "transparent"
+    },
+    compte: {
+        marginVertical: 22,
+        flex: 1,
+        flexDirection: 'row',
     },
     registerText: {
         fontSize: 16,
-        color: 'blue',
+        color: '#847F7F',
+        marginBottom: 20,
+    },
+    registerinscrire: {
+        fontSize: 16,
+        color: violet,
         marginBottom: 20,
     },
     forgotText: {
@@ -105,7 +145,15 @@ const styles = StyleSheet.create({
         color: violet,
         marginVertical: 10,
     },
- 
+    buttonlogin: {
+        width: 230,
+        height: 51,
+        flexShrink: 0,
+        boxShadow: '0px 4px 4px 0px #816BDB',
+        borderRadius: 18,
+        marginBottom: 20,
+    }
+
 });
 
 export default LoginScreen;
